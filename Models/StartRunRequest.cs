@@ -1,4 +1,4 @@
-namespace Device_Simulator_API.Models;
+namespace DeviceSimulator.Api.Models;
 
 public class StartRunRequest
 {
