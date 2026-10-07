@@ -1,6 +1,35 @@
 @Device_Simulator_API_HostAddress = http://localhost:5231
+@ApiKey = dev-api-key
+@DeviceId = analyzer-01
 
-GET {{Device_Simulator_API_HostAddress}}/weatherforecast/
+GET {{Device_Simulator_API_HostAddress}}/api/devices
 Accept: application/json
+
+###
+
+POST {{Device_Simulator_API_HostAddress}}/api/devices/{{DeviceId}}/start
+X-Api-Key: {{ApiKey}}
+Content-Type: application/json
+
+{
+  "simulateDisconnect": false,
+  "malformedPayload": false,
+  "latencyMs": 0
+}
+
+###
+
+GET {{Device_Simulator_API_HostAddress}}/api/devices/{{DeviceId}}/status
+X-Api-Key: {{ApiKey}}
+
+###
+
+GET {{Device_Simulator_API_HostAddress}}/api/devices/{{DeviceId}}/results
+X-Api-Key: {{ApiKey}}
+
+###
+
+POST {{Device_Simulator_API_HostAddress}}/api/devices/{{DeviceId}}/stop
+X-Api-Key: {{ApiKey}}
 
 ###

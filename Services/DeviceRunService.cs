@@ -16,7 +16,6 @@ public class DeviceRunService : IDeviceRunService
 
     private readonly ConcurrentDictionary<string, ActiveRun> _runs = new();
     private readonly IHubContext<TelemetryHub> _hubContext;
-    private readonly Random _random = new();
 
     public DeviceRunService(IHubContext<TelemetryHub> hubContext)
     {
@@ -105,7 +104,7 @@ public class DeviceRunService : IDeviceRunService
         {
             DeviceId = deviceId,
             RunId = run.Status.RunId!.Value,
-            Readings = run.Readings.ToList()
+            Readings = SnapshotReadings(run)
         };
     }
 
@@ -124,9 +123,12 @@ public class DeviceRunService : IDeviceRunService
             var reading = GenerateReading(deviceId, runId, profile, sequenceNumber);
             sequenceNumber++;
 
-            if (_runs.TryGetValue(deviceId, out var run))
+            if (_runs.TryGetValue(deviceId, out var run) && run.Status.RunId == runId)
             {
-                run.Readings.Add(reading);
+                lock (run.Readings)
+                {
+                    run.Readings.Add(reading);
+                }
             }
 
             // Every 4th message is intentionally malformed when the flag is set,
@@ -140,7 +142,7 @@ public class DeviceRunService : IDeviceRunService
 
             if (request.SimulateDisconnect && sequenceNumber == 5)
             {
-                if (_runs.TryGetValue(deviceId, out var faultedRun))
+                if (_runs.TryGetValue(deviceId, out var faultedRun) && faultedRun.Status.RunId == runId)
                 {
                     faultedRun.Status.Status = RunState.Faulted;
                 }
@@ -152,14 +154,22 @@ public class DeviceRunService : IDeviceRunService
         }
     }
 
+    private static List<TelemetryReading> SnapshotReadings(ActiveRun run)
+    {
+        lock (run.Readings)
+        {
+            return run.Readings.ToList();
+        }
+    }
+
     private TelemetryReading GenerateReading(string deviceId, Guid runId, string profile, int sequenceNumber)
     {
         var (value, unit) = profile switch
         {
-            "temperature" => (20 + _random.NextDouble() * 15, "C"),
-            "opticalDensity" => (_random.NextDouble() * 2, "OD"),
-            "pressure" => (95 + _random.NextDouble() * 10, "kPa"),
-            _ => (_random.NextDouble(), "unit")
+            "temperature" => (20 + Random.Shared.NextDouble() * 15, "C"),
+            "opticalDensity" => (Random.Shared.NextDouble() * 2, "OD"),
+            "pressure" => (95 + Random.Shared.NextDouble() * 10, "kPa"),
+            _ => (Random.Shared.NextDouble(), "unit")
         };
 
         return new TelemetryReading

@@ -17,7 +17,8 @@ public class ApiKeyMiddleware
         var isPublic =
             (context.Request.Method == HttpMethods.Get && path.Equals("/api/devices", StringComparison.OrdinalIgnoreCase)) ||
             path.StartsWithSegments("/hubs") ||
-            path.StartsWithSegments("/swagger");
+            path.StartsWithSegments("/swagger") ||
+            path.StartsWithSegments("/openapi");
  
         if (isPublic)
         {

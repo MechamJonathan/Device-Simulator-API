@@ -2,7 +2,7 @@ namespace DeviceSimulator.Api.Models;
 
 public class Device
 {
-    public string DeviceId { get; set; }
-    public string Profile { get; set; }
-    public string Description { get; set; }
+    public required string DeviceId { get; set; }
+    public required string Profile { get; set; }
+    public required string Description { get; set; }
 }
