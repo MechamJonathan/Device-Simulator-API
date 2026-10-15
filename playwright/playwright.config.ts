@@ -12,7 +12,8 @@ import { defineConfig } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
+  /* Spec files live next to this config. */
+  testDir: '.',
   /* The API keeps device run state in memory, so tests run one at a time
      to avoid fighting over the same device. */
   fullyParallel: false,
@@ -68,6 +69,8 @@ export default defineConfig({
   /* Start the API before the tests, or reuse it if it's already running locally. */
   webServer: {
     command: 'dotnet run --launch-profile http',
+    /* The .NET project is one folder up from this config. */
+    cwd: '..',
     url: 'http://localhost:5231/api/devices',
     reuseExistingServer: !process.env.CI,
   },
