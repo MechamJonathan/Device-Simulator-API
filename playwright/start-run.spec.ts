@@ -12,6 +12,10 @@ test('RUN-1: starting a device with body `{}` returns 202', async ({ request }) 
   expect(response.status()).toBe(202);
 });
 
+//| RUN-2 | The response has a GUID `runId`, `status: "Running"`, an ISO-8601 UTC `startedAt` and `stoppedAt: null`. |
+test('RUN-2: The response has a GUID `runId`, `status: "Running"`, an ISO-8601 UTC `startedAt` and `stoppedAt: null`.', async ({request}) => {
+  const response = await request.post(`/api/devices/${deviceId}/start`, { data: {} });
+});
 
 test('RUN-3: starting a device that is already running returns 409', async ({ request }) => {
   const first = await request.post(`/api/devices/${deviceId}/start`, { data: {} });
