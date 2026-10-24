@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/api';
 
 const deviceId = 'analyzer-01';
 

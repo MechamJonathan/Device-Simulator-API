@@ -189,4 +189,14 @@ public class DeviceRunService : IDeviceRunService
         public required List<TelemetryReading> Readings { get; set; }
         public required CancellationTokenSource Cts { get; set; }
     }
+
+    public void Reset()
+    {
+        foreach (var run in _runs.Values)
+        {
+            run.Cts.Cancel();
+        }
+        
+        _runs.Clear();
+    }
 }

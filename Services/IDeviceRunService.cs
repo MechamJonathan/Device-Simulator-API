@@ -10,4 +10,5 @@ public interface IDeviceRunService
     RunStatus StopRun(string deviceId);
     RunStatus GetStatus(string deviceId);
     ResultsResponse? GetResults(string deviceId, Guid? runId);
+    void Reset();
 }

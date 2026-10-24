@@ -19,6 +19,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    // Test-only: clears all runs so each test starts from a clean state.
+    app.MapPost("/api/test/reset", (IDeviceRunService runService) =>
+    {
+        runService.Reset();
+        return Results.NoContent();
+    });
 }
 
 app.UseHttpsRedirection();
