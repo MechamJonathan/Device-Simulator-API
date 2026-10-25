@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures/api';
+import { getStatus } from './fixtures/helpers';
 
 const deviceId = 'analyzer-01';
 
@@ -15,8 +16,7 @@ test('RUN-1: starting a device with body `{}` returns 202', async ({ request }) 
 test('RUN-2: The response has a GUID `runId`, `status: "Running"`, an ISO-8601 UTC `startedAt` and `stoppedAt: null`.', async ({request}) => {
   const first = await request.post(`/api/devices/${deviceId}/start`, { data: {} });
   const firstRun = await first.json();
-  const status = await request.get(`/api/devices/${deviceId}/status`);
-  expect(await status.json()).toMatchObject({
+  expect(await getStatus(request, deviceId)).toMatchObject({
     status: 'Running',
     runId: firstRun.runId,
   });
@@ -30,9 +30,7 @@ test('RUN-3: starting a device that is already running returns 409', async ({ re
   const second = await request.post(`/api/devices/${deviceId}/start`, { data: {} });
   expect(second.status()).toBe(409);
 
-  const status = await request.get(`/api/devices/${deviceId}/status`);
-  expect(status.status()).toBe(200);
-  expect(await status.json()).toMatchObject({
+  expect(await getStatus(request, deviceId)).toMatchObject({
     status: 'Running',
     runId: firstRun.runId,
   });
@@ -71,14 +69,12 @@ test('RUN-6: Runs on different devices are independent.', async ({ request }) =>
 
   expect(run2.runId).not.toBe(run1.runId);
 
-  const status1 = await request.get('/api/devices/analyzer-01/status');
-  expect(await status1.json()).toMatchObject({ status: 'Running', runId: run1.runId });
+  expect(await getStatus(request, 'analyzer-01')).toMatchObject({ status: 'Running', runId: run1.runId });
 
   const stop2 = await request.post('/api/devices/analyzer-02/stop');
   expect(stop2.status()).toBe(200);
 
-  const afterStop = await request.get('/api/devices/analyzer-01/status');
-  expect(await afterStop.json()).toMatchObject({ status: 'Running', runId: run1.runId });
+  expect(await getStatus(request, 'analyzer-01')).toMatchObject({ status: 'Running', runId: run1.runId });
 
   await expect.poll(async () => {
     const res = await request.get('/api/devices/analyzer-01/results');

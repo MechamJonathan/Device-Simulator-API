@@ -1,14 +1,8 @@
-import { APIRequestContext } from '@playwright/test';
 import { test, expect } from './fixtures/api';
+import { getStatus } from './fixtures/helpers';
 
 const deviceId = 'analyzer-01';
 const validStatuses = ['Idle', 'Running', 'Stopped', 'Faulted'];
-
-async function getStatus(request: APIRequestContext) {
-  const response = await request.get(`/api/devices/${deviceId}/status`);
-  expect(response.status()).toBe(200);
-  return (await response.json()).status;
-}
 
 test('STAT-1: a device that has never been run returns 200 with status "Idle" and runId null', async ({ request }) => {
   const response = await request.get(`/api/devices/${deviceId}/status`);
@@ -24,9 +18,7 @@ test('STAT-2 Status shows `Running` during a run and `Stopped` after it is stopp
     expect(start.status()).toBe(202);
     const startRun = await start.json();
 
-    const runStatus = await request.get(`/api/devices/${deviceId}/status`);
-    expect(runStatus.status()).toBe(200);
-    expect(await runStatus.json()).toMatchObject({
+    expect(await getStatus(request, deviceId)).toMatchObject({
         status: 'Running',
         runId: startRun.runId,
     });
@@ -34,9 +26,7 @@ test('STAT-2 Status shows `Running` during a run and `Stopped` after it is stopp
     const stop = await request.post(`/api/devices/${deviceId}/stop`);
     expect(stop.status()).toBe(200);
 
-    const stopStatus = await request.get(`/api/devices/${deviceId}/status`);
-    expect(stopStatus.status()).toBe(200);
-    expect(await stopStatus.json()).toMatchObject({
+    expect(await getStatus(request, deviceId)).toMatchObject({
         status: 'Stopped',
         runId: startRun.runId,
     });
@@ -55,13 +45,13 @@ test('STAT-3 Status for an unknown device returns 404.', async ({ request }) => 
 });
 
 test('STAT-4 Statuses are strings (`"Running"`), not numbers.', async ({ request }) => {
-    const idle = await getStatus(request)
+    const idle = (await getStatus(request, deviceId)).status;
 
     await request.post(`/api/devices/${deviceId}/start`, { data: {} });
-    const running = await getStatus(request);
+    const running = (await getStatus(request, deviceId)).status;
 
     await request.post(`/api/devices/${deviceId}/stop`, { data: {} });
-    const stopped = await getStatus(request);
+    const stopped = (await getStatus(request, deviceId)).status;
 
     for (const status of [idle, running, stopped]) {
         expect(typeof status).toBe('string');
