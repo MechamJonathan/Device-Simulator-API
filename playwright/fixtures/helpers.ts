@@ -6,3 +6,10 @@ export async function getStatus(request: APIRequestContext, deviceId: string) {
   expect(response.status(), `status request for "${deviceId}"`).toBe(200);
   return response.json();
 }
+
+// Fetches a device's results, asserting the request itself succeeded.
+export async function getResults(request: APIRequestContext, deviceId: string) {
+  const response = await request.get(`/api/devices/${deviceId}/results`);
+  expect(response.status(), `results request for "${deviceId}"`).toBe(200);
+  return response.json();
+}
