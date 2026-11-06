@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/MechamJonathan/Device-Simulator-API#readme",
   "devDependencies": {
+    "@microsoft/signalr": "^10.0.11",
     "@playwright/test": "^1.64.0",
     "@types/node": "^26.6.4"
   }

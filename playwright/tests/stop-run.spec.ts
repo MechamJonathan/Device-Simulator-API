@@ -1,5 +1,5 @@
-import { test, expect } from './fixtures/api';
-import { getResults, getStatus } from './fixtures/helpers';
+import { test, expect } from '../fixtures/api';
+import { getResults, getStatus } from '../fixtures/helpers';
 
 const deviceId = 'analyzer-01';
 

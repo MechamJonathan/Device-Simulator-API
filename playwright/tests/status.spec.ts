@@ -1,5 +1,5 @@
-import { test, expect } from './fixtures/api';
-import { getStatus } from './fixtures/helpers';
+import { test, expect } from '../fixtures/api';
+import { getStatus } from '../fixtures/helpers';
 
 const deviceId = 'analyzer-01';
 const validStatuses = ['Idle', 'Running', 'Stopped', 'Faulted'];

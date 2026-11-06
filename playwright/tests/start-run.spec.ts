@@ -1,12 +1,11 @@
-import { test, expect } from './fixtures/api';
-import { getStatus } from './fixtures/helpers';
+import { test, expect } from '../fixtures/api';
+import { getStatus } from '../fixtures/helpers';
 
 const deviceId = 'analyzer-01';
 
 test.afterEach(async ({ request }) => {
   await request.post(`/api/devices/${deviceId}/stop`);
 });
-
 
 test('RUN-1: starting a device with body `{}` returns 202', async ({ request }) => {
   const response = await request.post(`/api/devices/${deviceId}/start`, { data: {} });
