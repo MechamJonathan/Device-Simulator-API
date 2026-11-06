@@ -11,7 +11,6 @@ builder.Services.AddSignalR()
     .AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
 
-// Run state lives in memory, so the service must outlive individual requests.
 builder.Services.AddSingleton<IDeviceRunService, DeviceRunService>();
 
 var app = builder.Build();
@@ -20,7 +19,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 
-    // Test-only: clears all runs so each test starts from a clean state.
     app.MapPost("/api/test/reset", (IDeviceRunService runService) =>
     {
         runService.Reset();
