@@ -35,8 +35,6 @@ I also added a few options to the start request so there's something interesting
 
 `simulateDisconnect` makes the device fault after 5 readings. `latencyMs` slows the readings down. `malformedPayload` makes every 4th SignalR message drop its reading data.
 
-If you want to poke at it by hand, [`Device-Simulator-API.http`](Device-Simulator-API.http) has requests ready to send from VS Code or Rider.
-
 Built with .NET 10, ASP.NET Core and SignalR.
 
 ## The tests
